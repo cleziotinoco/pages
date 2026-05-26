@@ -1,47 +1,52 @@
-const navbar   = document.getElementById('navbar');
-const hamburger = document.getElementById('hamburger');
-const navMenu  = document.getElementById('navMenu');
-const navLinks = document.querySelectorAll('.nav-link');
-const sections = document.querySelectorAll('section');
+var navbar    = document.getElementById('navbar');
+var hamburger = document.getElementById('hamburger');
+var navMenu   = document.getElementById('navMenu');
+var navLinks  = document.querySelectorAll('.nav-link');
+var sections  = document.querySelectorAll('section');
 
-// Abre/fecha menu mobile
-hamburger.addEventListener('click', () => {
-  hamburger.classList.toggle('aberto');
-  navMenu.classList.toggle('aberto');
+// Abre e fecha menu mobile
+hamburger.addEventListener('click', function() {
+  var aberto = navMenu.classList.toggle('aberto');
+  hamburger.classList.toggle('aberto', aberto);
+  // Garante que o botão fica sempre por cima do menu
+  hamburger.style.zIndex = aberto ? '10000' : '';
+  document.body.style.overflow = aberto ? 'hidden' : '';
 });
 
-// Fecha menu ao clicar num link + scroll suave
-navLinks.forEach(link => {
-  link.addEventListener('click', (e) => {
-    const href = link.getAttribute('href');
-    if (href && href.startsWith('#')) {
+// Clique num link: fecha menu e navega
+navLinks.forEach(function(link) {
+  link.addEventListener('click', function(e) {
+    var href = link.getAttribute('href');
+    if (href && href.charAt(0) === '#') {
       e.preventDefault();
-      hamburger.classList.remove('aberto');
       navMenu.classList.remove('aberto');
-      const alvo = document.querySelector(href);
+      hamburger.classList.remove('aberto');
+      hamburger.style.zIndex = '';
+      document.body.style.overflow = '';
+      var alvo = document.querySelector(href);
       if (alvo) {
-        const offset = navbar.offsetHeight;
-        const topo = alvo.getBoundingClientRect().top + window.scrollY - offset;
+        var offset = navbar.offsetHeight;
+        var topo = alvo.getBoundingClientRect().top + window.pageYOffset - offset;
         window.scrollTo({ top: topo, behavior: 'smooth' });
       }
     }
   });
 });
 
-// Destaca link ativo + encolhe nav ao rolar
-window.addEventListener('scroll', () => {
-  navbar.style.boxShadow = window.scrollY > 40
-    ? '0 4px 24px rgba(0,0,0,0.4)'
-    : 'none';
+// Scroll: sombra no nav + link ativo
+window.addEventListener('scroll', function() {
+  navbar.style.boxShadow = window.pageYOffset > 40
+    ? '0 4px 16px rgba(30,45,74,0.12)'
+    : '0 2px 12px rgba(30,45,74,0.08)';
 
-  let atual = '';
-  sections.forEach(s => {
-    if (window.scrollY >= s.offsetTop - navbar.offsetHeight - 20) {
+  var atual = '';
+  sections.forEach(function(s) {
+    if (window.pageYOffset >= s.offsetTop - navbar.offsetHeight - 30) {
       atual = s.id;
     }
   });
 
-  navLinks.forEach(link => {
+  navLinks.forEach(function(link) {
     link.classList.toggle('ativo', link.getAttribute('href') === '#' + atual);
   });
 });
